@@ -1,4 +1,39 @@
-/* 櫻花背景動畫 Canvas */
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 櫻花悄悄話迷因製作所 - SAKURA SECRET MEME</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- html2canvas CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      --sakura-pink: #ffb7c5;
+      --sakura-deep: #ff758c;
+      --sakura-bg: #fff5f7;
+      --wood-dark: #4a3b32;
+    }
+
+    body {
+      font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
+      background-color: var(--sakura-bg);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(255, 183, 197, 0.3) 0%, transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(255, 117, 140, 0.2) 0%, transparent 40%);
+      color: var(--wood-dark);
+      overflow-x: hidden;
+    }
+
     #sakuraCanvas {
       position: fixed;
       top: 0;
@@ -9,50 +44,13 @@
       z-index: 0;
     }
 
-    /* 迷因文字效果：日系可愛體與粗描邊 */
     .meme-text {
       font-family: 'Mochiy Pop One', 'Zen Maru Gothic', sans-serif;
       font-weight: 900;
       text-transform: uppercase;
       word-break: break-word;
       line-height: 1.25;
-      letter-spacing: 1px;}
-
-    body {<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌸 櫻花迷因製作所 - SAKURA MEME MAKER</title>
-
-  <!-- 引入 Google Fonts：Mochiy Pop One (日系可愛標題/迷因體)、Zen Maru Gothic (圓體)、Noto Sans TC -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
-
-  <!-- 引入 Tailwind CSS 進行響應式與質感排版 -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- 引入 html2canvas CDN (用於將 DOM 畫布轉成 PNG 下載) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-  <style>
-    /* 核心主題與全域樣式設定 */
-    :root {
-      --sakura-pink: #ffb7c5;
-      --sakura-deep: #ff758c;
-      --sakura-bg: #fff5f7;
-      --wood-dark: #4a3b32;
-      font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
-      background-color: var(--sakura-bg);
-      background-image: 
-        radial-gradient(circle at 10% 10%, rgba(255, 183, 197, 0.3) 0%, transparent 30%),
-        radial-gradient(circle at 90% 85%, rgba(255, 117, 140, 0.2) 0%, transparent 40%);
-      color: var(--wood-dark);
-      overflow-x: hidden;
-    }
-
-      /* 重深色 3D 描邊，保證在粉嫩或極亮背景上都清楚 */
+      letter-spacing: 1px;
       text-shadow: 
         -3px -3px 0 #1a100c,  3px -3px 0 #1a100c,
         -3px  3px 0 #1a100c,  3px  3px 0 #1a100c,
@@ -61,7 +59,6 @@
          0px  5px 10px rgba(0, 0, 0, 0.8);
     }
 
-    /* 日系和风玻璃質感卡片 */
     .sakura-card {
       background: rgba(255, 250, 240, 0.88);
       backdrop-filter: blur(12px);
@@ -69,7 +66,6 @@
       box-shadow: 0 10px 30px rgba(255, 117, 140, 0.15);
     }
 
-    /* 櫻花粉特色按鈕 */
     .sakura-button {
       background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #feada6 100%);
       box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
@@ -84,7 +80,6 @@
       transform: translateY(1px) scale(0.98);
     }
 
-    /* 客製化櫻花粉控制滑桿 */
     input[type=range] {
       -webkit-appearance: none;
       background: #ffe3e8;
@@ -106,7 +101,6 @@
       transform: scale(1.25);
     }
 
-    /* 隱藏原生檔案上傳元件 */
     input[type="file"] {
       display: none;
     }
@@ -114,133 +108,127 @@
 </head>
 <body class="min-h-screen p-4 sm:p-6 md:p-10 flex flex-col justify-between relative">
 
-  <!-- 櫻花飄落背景 Canvas -->
   <canvas id="sakuraCanvas"></canvas>
 
-  <!-- 頁頭標題區塊 -->
   <header class="relative z-10 text-center mb-6 md:mb-8">
     <div class="inline-block bg-pink-100/80 border border-pink-300/80 px-4 py-1 rounded-full text-xs text-pink-700 font-bold tracking-widest mb-2 shadow-sm">
-      🌸 桜のミームスタジオ 🌸
+      🌸 桜の秘密メッセージ 🌸
     </div>
     <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 tracking-wider drop-shadow-sm flex items-center justify-center gap-2">
-      <span class="text-pink-500">自定義迷因</span>產生器
+      <span class="text-pink-500">悄悄話</span>迷因產生器
     </h1>
     <p class="text-xs sm:text-sm text-pink-600/90 font-medium mt-1">
-      輕鬆打造帶有日系櫻花美感與爆笑梗圖的專屬 Meme！
+      輸入祕密訊息一鍵轉換為「悄悄話」，保護隱私又有趣！
     </p>
   </header>
 
-  <!-- 主要內容區：電腦版左右兩欄，手機版自動調整為上下直向排版 -->
   <main class="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-grow">
     
-    <!-- 左側：控制面板區塊 -->
+    <!-- 左側：控制面板 -->
     <section class="lg:col-span-5 sakura-card p-6 sm:p-7 rounded-3xl space-y-6">
       
       <div class="flex items-center justify-between border-b border-pink-200/80 pb-3">
         <h2 class="text-base sm:text-lg font-bold text-pink-700 flex items-center gap-2">
-          <span>🎨</span> 迷因客製化面板
+          <span>🎨</span> 悄悄話控制面板
         </h2>
-        <span class="text-xs bg-pink-200 text-pink-800 font-bold px-2.5 py-0.5 rounded-full">Sakura Ver.</span>
+        <span class="text-xs bg-pink-200 text-pink-800 font-bold px-2.5 py-0.5 rounded-full">Secret Ver.</span>
       </div>
 
-      <!-- 1. 圖片上傳區段 (使用 FileReader API 避免 CORS 錯誤) -->
+      <!-- 1. 圖片上傳區段 -->
       <div>
         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-          1. 選擇/上傳底圖 (支援相簿圖片)
+          1. 選擇底圖
         </label>
-        
-        <label for="imageLoader" class="flex items-center justify-center gap-3 w-full p-4 bg-white/90 hover:bg-white border-2 border-dashed border-pink-300 hover:border-pink-500 rounded-2xl cursor-pointer text-pink-600 transition-all shadow-sm hover:shadow group">
+        <label for="imageLoader" class="flex items-center justify-center gap-3 w-full p-4 bg-white/90 hover:bg-white border-2 border-dashed border-pink-300 hover:border-pink-500 rounded-2xl cursor-pointer text-pink-600 transition-all shadow-sm group">
           <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
-          <span class="font-bold text-sm">點擊上傳電腦/手機圖片</span>
+          <span class="font-bold text-sm">點擊上傳圖片</span>
         </label>
-        <!-- 真正的 HTML file input (隱藏起來，經由上面的 label 觸發) -->
         <input type="file" id="imageLoader" accept="image/*">
       </div>
 
-      <!-- 2. 上下層雙文字輸入框 -->
+      <!-- 2. 文字輸入與加密轉換 -->
       <div class="space-y-4">
         <div>
           <label for="topTextInput" class="block text-xs font-bold text-pink-700 mb-1">
-            🌸 上方文字 (TOP TEXT)
+            🌸 上方悄悄話 (TOP TEXT)
           </label>
           <input type="text" id="topTextInput" value="當你在櫻花樹下寫程式" 
-            class="w-full bg-white/90 border border-pink-200 focus:border-pink-500 text-slate-800 px-4 py-2.5 rounded-xl outline-none text-sm transition shadow-inner" placeholder="請輸入上方文字...">
+            class="w-full bg-white/90 border border-pink-200 focus:border-pink-500 text-slate-800 px-4 py-2.5 rounded-xl outline-none text-sm transition shadow-inner">
         </div>
 
         <div>
           <label for="bottomTextInput" class="block text-xs font-bold text-pink-700 mb-1">
-            🌸 下方文字 (BOTTOM TEXT)
+            🌸 下方悄悄話 (BOTTOM TEXT)
           </label>
           <input type="text" id="bottomTextInput" value="居然一次就一次過 PASS！" 
-            class="w-full bg-white/90 border border-pink-200 focus:border-pink-500 text-slate-800 px-4 py-2.5 rounded-xl outline-none text-sm transition shadow-inner" placeholder="請輸入下方文字...">
+            class="w-full bg-white/90 border border-pink-200 focus:border-pink-500 text-slate-800 px-4 py-2.5 rounded-xl outline-none text-sm transition shadow-inner">
+        </div>
+
+        <!-- 悄悄話開關按鈕 -->
+        <div class="flex gap-2 pt-1">
+          <button id="encryptBtn" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 rounded-xl text-xs transition shadow-md">
+            🔒 轉換為悄悄話 (加密)
+          </button>
+          <button id="decryptBtn" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs transition shadow-md">
+            🔓 還原原本文字 (解密)
+          </button>
         </div>
       </div>
 
-      <!-- 3. 參數微調滑桿與顏色選項 -->
+      <!-- 3. 滑桿與顏色設定 -->
       <div class="space-y-4 pt-4 border-t border-pink-200/80">
-        <!-- 滑桿 1: 字體大小 -->
         <div>
           <div class="flex justify-between text-xs text-slate-700 font-bold mb-1.5">
-            <span>文字大小 (Font Size)</span>
+            <span>字體大小</span>
             <span id="fontSizeVal" class="text-pink-600 font-mono">32px</span>
           </div>
           <input type="range" id="fontSizeSlider" min="16" max="72" value="32" class="w-full">
         </div>
 
-        <!-- 滑桿 2: 上方文字垂直位置 -->
         <div>
           <div class="flex justify-between text-xs text-slate-700 font-bold mb-1.5">
-            <span>上方文字位置 (Top Offset)</span>
+            <span>上方文字位置</span>
             <span id="topPosVal" class="text-pink-600 font-mono">8%</span>
           </div>
           <input type="range" id="topPosSlider" min="0" max="45" value="8" class="w-full">
         </div>
 
-        <!-- 滑桿 3: 下方文字垂直位置 -->
         <div>
           <div class="flex justify-between text-xs text-slate-700 font-bold mb-1.5">
-            <span>下方文字位置 (Bottom Offset)</span>
+            <span>下方文字位置</span>
             <span id="bottomPosVal" class="text-pink-600 font-mono">8%</span>
           </div>
           <input type="range" id="bottomPosSlider" min="0" max="45" value="8" class="w-full">
         </div>
 
-        <!-- 顏色選擇器：文字主要顏色 & 黑色外框描邊色 -->
         <div class="grid grid-cols-2 gap-4 pt-2">
           <div>
             <label for="textColor" class="block text-xs font-bold text-slate-700 mb-1">文字填充顏色</label>
-            <div class="flex items-center gap-2">
-              <input type="color" id="textColor" value="#ffffff" class="w-10 h-9 bg-transparent cursor-pointer rounded-lg border border-pink-300">
-              <span class="text-xs font-mono text-slate-600">預設純白</span>
-            </div>
+            <input type="color" id="textColor" value="#ffffff" class="w-full h-9 bg-transparent cursor-pointer rounded-lg border border-pink-300">
           </div>
           <div>
-            <label for="textOutlineColor" class="block text-xs font-bold text-slate-700 mb-1">文字外框描邊</label>
-            <div class="flex items-center gap-2">
-              <input type="color" id="textOutlineColor" value="#1a100c" class="w-10 h-9 bg-transparent cursor-pointer rounded-lg border border-pink-300">
-              <span class="text-xs font-mono text-slate-600">深色粗邊</span>
-            </div>
+            <label for="textOutlineColor" class="block text-xs font-bold text-slate-700 mb-1">文字描邊顏色</label>
+            <input type="color" id="textOutlineColor" value="#1a100c" class="w-full h-9 bg-transparent cursor-pointer rounded-lg border border-pink-300">
           </div>
         </div>
       </div>
 
-      <!-- 4. 一鍵下載按鈕 -->
+      <!-- 下載按鈕 -->
       <div class="pt-2">
         <button id="downloadBtn" class="sakura-button w-full py-4 px-6 rounded-2xl font-black text-slate-900 text-base tracking-wider flex items-center justify-center gap-2 shadow-lg">
           <svg class="w-5 h-5 text-pink-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
           </svg>
-          一鍵下載迷因 (my-meme.png)
+          一鍵下載悄悄話迷因 (my-meme.png)
         </button>
       </div>
 
     </section>
 
-    <!-- 右側：迷因即時預覽區 -->
+    <!-- 右側：即時預覽區 -->
     <section class="lg:col-span-7 flex flex-col items-center justify-center">
-      
       <div class="w-full flex justify-between items-center mb-3 px-2">
         <span class="text-xs font-bold text-pink-700 tracking-wider flex items-center gap-2">
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping"></span>
@@ -249,37 +237,26 @@
         <span class="text-xs text-pink-600/70 font-mono">100% 高清圖片擷取</span>
       </div>
 
-      <!-- 迷因畫布容器：html2canvas 會擷取此 #memeContainer 的內容 -->
       <div id="memeContainer" class="relative w-full max-w-[650px] overflow-hidden rounded-3xl border-4 border-white shadow-2xl bg-white/60 flex items-center justify-center select-none min-h-[350px]">
-        
-        <!-- 底圖展示標籤 -->
         <img id="memeImage" src="" alt="Meme Background" class="w-full h-auto object-contain block max-h-[600px]">
 
-        <!-- 上方文字顯示層 -->
         <div id="topTextDisplay" class="meme-text absolute w-full text-center px-4 left-0 top-[8%] text-white pointer-events-none transition-all duration-75">
           當你在櫻花樹下寫程式
         </div>
 
-        <!-- 下方文字顯示層 -->
         <div id="bottomTextDisplay" class="meme-text absolute w-full text-center px-4 left-0 bottom-[8%] text-white pointer-events-none transition-all duration-75">
           居然一次就一次過 PASS！
         </div>
-
       </div>
     </section>
 
   </main>
 
-  <!-- 頁尾 -->
   <footer class="relative z-10 text-center text-xs text-pink-700/60 mt-10 pb-4">
-    🌸 櫻花迷因製作所 &copy; 2026 - Crafted with Sakura Aesthetic & html2canvas
+    🌸 櫻花悄悄話迷因製作所 &copy; 2026 - Sakura Secret Meme Maker
   </footer>
 
-  <!-- JavaScript 邏輯控制區塊 -->
   <script>
-    /* ==================================================================
-       1. 取得 DOM 網頁元素 (元件綁定)
-       ================================================================== */
     const imageLoader = document.getElementById('imageLoader');
     const memeImage = document.getElementById('memeImage');
     const topTextInput = document.getElementById('topTextInput');
@@ -287,7 +264,6 @@
     const topTextDisplay = document.getElementById('topTextDisplay');
     const bottomTextDisplay = document.getElementById('bottomTextDisplay');
     
-    // 控制滑桿與顯示數值元素
     const fontSizeSlider = document.getElementById('fontSizeSlider');
     const topPosSlider = document.getElementById('topPosSlider');
     const bottomPosSlider = document.getElementById('bottomPosSlider');
@@ -295,56 +271,83 @@
     const topPosVal = document.getElementById('topPosVal');
     const bottomPosVal = document.getElementById('bottomPosVal');
 
-    // 顏色選擇器
     const textColor = document.getElementById('textColor');
     const textOutlineColor = document.getElementById('textOutlineColor');
 
-    // 下載與容器
     const downloadBtn = document.getElementById('downloadBtn');
     const memeContainer = document.getElementById('memeContainer');
+    const encryptBtn = document.getElementById('encryptBtn');
+    const decryptBtn = document.getElementById('decryptBtn');
 
-    /* ==================================================================
-       2. 初始化預設迷因圖 (使用 SVG Data URL 生成櫻花風範例底圖，避開載入問題)
-       ================================================================== */
+    // 預設 SVG 底圖
     const defaultSakuraSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='650' height='450' viewBox='0 0 650 450'><rect width='650' height='450' fill='%23ffd1dc'/><path d='M0 350 Q 325 300 650 350 L650 450 L0 450 Z' fill='%23ffb7c5'/><circle cx='325' cy='200' r='100' fill='%23ffffff' opacity='0.9'/><path d='M325 140 C 335 170, 365 180, 325 240 C 285 180, 315 170, 325 140 Z' fill='%23ff758c'/><circle cx='300' cy='185' r='8' fill='%234a3b32'/><circle cx='350' cy='185' r='8' fill='%234a3b32'/><path d='M315 210 Q 325 220 335 210' stroke='%23ff758c' stroke-width='4' fill='none'/><text x='325' y='410' font-family='sans-serif' font-weight='bold' font-size='16' fill='%234a3b32' text-anchor='middle'>[ 點擊左側按鈕可上傳自己的相片 ]</text></svg>";
     memeImage.src = defaultSakuraSvg;
 
-    /* ==================================================================
-       3. 本機圖片上傳處理 (使用 HTML5 FileReader API 避免 CORS 錯誤)
-       ================================================================== */
+    // 上傳圖片
     imageLoader.addEventListener('change', function(event) {
-      // 取得使用者選取的檔案
       const file = event.target.files[0];
-      
       if (file) {
-        // 創建 FileReader 物件讀取本機圖檔
         const reader = new FileReader();
-
-        // 檔案讀取成功後，將 Base64 編碼設定為圖片來源
         reader.onload = function(e) {
           memeImage.src = e.target.result;
         };
-
-        // 以 Base64 Data URL 格式讀取
         reader.readAsDataURL(file);
       }
     });
 
-    /* ==================================================================
-       4. 即時文字與滑桿控制 (Event Listeners)
-       ================================================================== */
-    
-    // 即時更新上方文字
+    // 悄悄話加密與解密演算法 (Base64 + 簡單位移)
+    let originalTopText = topTextInput.value;
+    let originalBottomText = bottomTextInput.value;
+
+    function toWhisper(str) {
+      if (!str) return '';
+      try {
+        return btoa(encodeURIComponent(str));
+      } catch (e) {
+        return str;
+      }
+    }
+
+    function fromWhisper(str) {
+      if (!str) return '';
+      try {
+        return decodeURIComponent(atob(str));
+      } catch (e) {
+        return str;
+      }
+    }
+
+    // 點擊加密按鈕
+    encryptBtn.addEventListener('click', () => {
+      originalTopText = topTextInput.value;
+      originalBottomText = bottomTextInput.value;
+
+      topTextInput.value = toWhisper(topTextInput.value);
+      bottomTextInput.value = toWhisper(bottomTextInput.value);
+
+      topTextDisplay.innerText = topTextInput.value;
+      bottomTextDisplay.innerText = bottomTextInput.value;
+    });
+
+    // 點擊解密按鈕
+    decryptBtn.addEventListener('click', () => {
+      topTextInput.value = fromWhisper(topTextInput.value);
+      bottomTextInput.value = fromWhisper(bottomTextInput.value);
+
+      topTextDisplay.innerText = topTextInput.value;
+      bottomTextDisplay.innerText = bottomTextInput.value;
+    });
+
+    // 即時文字更新
     topTextInput.addEventListener('input', () => {
       topTextDisplay.innerText = topTextInput.value || '';
     });
 
-    // 即時更新下方文字
     bottomTextInput.addEventListener('input', () => {
       bottomTextDisplay.innerText = bottomTextInput.value || '';
     });
 
-    // 滑桿：控制字體大小
+    // 滑桿控制
     fontSizeSlider.addEventListener('input', () => {
       const size = fontSizeSlider.value;
       fontSizeVal.innerText = `${size}px`;
@@ -352,27 +355,24 @@
       bottomTextDisplay.style.fontSize = `${size}px`;
     });
 
-    // 滑桿：微調上方文字高度位置 (%)
     topPosSlider.addEventListener('input', () => {
       const pos = topPosSlider.value;
       topPosVal.innerText = `${pos}%`;
       topTextDisplay.style.top = `${pos}%`;
     });
 
-    // 滑桿：微調下方文字高度位置 (%)
     bottomPosSlider.addEventListener('input', () => {
       const pos = bottomPosSlider.value;
       bottomPosVal.innerText = `${pos}%`;
       bottomTextDisplay.style.bottom = `${pos}%`;
     });
 
-    // 顏色調整：文字顏色
+    // 顏色控制
     textColor.addEventListener('input', () => {
       topTextDisplay.style.color = textColor.value;
       bottomTextDisplay.style.color = textColor.value;
     });
 
-    // 顏色調整：外框黑邊粗描邊效果 (動態更新 text-shadow)
     textOutlineColor.addEventListener('input', () => {
       const color = textOutlineColor.value;
       const shadowStyle = `
@@ -381,44 +381,29 @@
         -3px  0px 0 ${color},  3px  0px 0 ${color},
          0px -3px 0 ${color},  0px  3px 0 ${color},
          0px  5px 10px rgba(0, 0, 0, 0.8)`;
-      
       topTextDisplay.style.textShadow = shadowStyle;
       bottomTextDisplay.style.textShadow = shadowStyle;
     });
 
-    /* ==================================================================
-       5. 一鍵下載迷因圖 (使用 html2canvas 繪製區塊並觸發 PNG 下載)
-       ================================================================== */
+    // 下載迷因圖片
     downloadBtn.addEventListener('click', () => {
-      // 改變按鈕狀態呈現載入中
       const originalBtnText = downloadBtn.innerHTML;
-      downloadBtn.innerHTML = `
-        <svg class="animate-spin h-5 w-5 text-pink-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <span>櫻花迷因生成中...</span>
-      `;
+      downloadBtn.innerHTML = `<span>櫻花悄悄話生成中...</span>`;
       downloadBtn.style.pointerEvents = 'none';
 
-      // 呼叫 html2canvas 擷取 #memeContainer
       html2canvas(memeContainer, {
-        scale: 2,             // 雙倍解析度，確保圖片高清不模糊
-        useCORS: true,        // 啟用跨網域圖像支援
-        backgroundColor: null // 保持背景樣式完整
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null
       }).then(canvas => {
-        // 轉為 PNG Data URL
         const imageURL = canvas.toDataURL('image/png');
-
-        // 建立隱藏的 <a> 標籤觸發下載
         const link = document.createElement('a');
         link.href = imageURL;
-        link.download = 'my-meme.png'; // 設定要求的檔名 my-meme.png
+        link.download = 'my-meme.png';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
 
-        // 恢復按鈕原本樣式
         downloadBtn.innerHTML = originalBtnText;
         downloadBtn.style.pointerEvents = 'auto';
       }).catch(err => {
@@ -428,12 +413,9 @@
       });
     });
 
-    /* ==================================================================
-       6. 櫻花飄落背景 Canvas 特效 (浪漫櫻花瓣動畫)
-       ================================================================== */
+    // 櫻花飄落背景 Canvas
     const canvas = document.getElementById('sakuraCanvas');
     const ctx = canvas.getContext('2d');
-
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
@@ -442,9 +424,8 @@
       height = canvas.height = window.innerHeight;
     });
 
-    // 花瓣陣列與屬性
     const petals = [];
-    const petalCount = 30; // 畫面上的花瓣數量
+    const petalCount = 30;
 
     class Petal {
       constructor() {
@@ -463,7 +444,6 @@
         this.x += Math.sin(this.y * 0.01) + this.speedX;
         this.angle += this.spin;
 
-        // 超出螢幕底部時回到上方重設位置
         if (this.y > height) {
           this.y = -20;
           this.x = Math.random() * width;
@@ -476,7 +456,6 @@
         ctx.rotate((this.angle * Math.PI) / 180);
         ctx.beginPath();
         ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`;
-        // 繪製櫻花瓣形狀
         ctx.moveTo(0, 0);
         ctx.bezierCurveTo(-this.size, -this.size, -this.size * 1.5, this.size / 3, 0, this.size * 1.5);
         ctx.bezierCurveTo(this.size * 1.5, this.size / 3, this.size, -this.size, 0, 0);
@@ -485,12 +464,10 @@
       }
     }
 
-    // 初始化花瓣
     for (let i = 0; i < petalCount; i++) {
       petals.push(new Petal());
     }
 
-    // 動畫循環渲染
     function animateSakura() {
       ctx.clearRect(0, 0, width, height);
       petals.forEach(petal => {
@@ -500,7 +477,6 @@
       requestAnimationFrame(animateSakura);
     }
 
-    // 啟動動畫
     animateSakura();
   </script>
 </body>
