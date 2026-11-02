@@ -86,6 +86,544 @@
             <p>💖 馬卡龍美食隨機抽籤機 | 祝您用餐愉快！</p>
         </footer>
     </div>
+    /* ==========================================
+   馬卡龍可愛色系變數設定
+   ========================================== */
+:root {
+    --bg-pink: #FFD1DC;
+    --bg-yellow: #FFF5BA;
+    --bg-mint: #E8F5E9;
+    --macaron-pink: #FF85A1;
+    --macaron-yellow: #FFD23F;
+    --macaron-blue: #70D6FF;
+    --macaron-green: #06D6A0;
+    --macaron-purple: #B5179E;
+    --text-color: #4A4E69;
+    --text-dark: #22223B;
+    --white: #FFFFFF;
+    --shadow: 0 10px 25px rgba(255, 133, 161, 0.25);
+    --radius-lg: 28px;
+    --radius-sm: 14px;
+}
+
+/* 全局基礎設定 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+    background: linear-gradient(135deg, #FFE5EC 0%, #FFF0F5 50%, #E8F5E9 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+    padding: 20px;
+}
+
+/* 背景動態氣泡 */
+.macaron-bg-bubbles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: float 8s infinite ease-in-out;
+}
+
+.b1 { width: 120px; height: 120px; background: var(--bg-pink); top: 10%; left: 8%; animation-delay: 0s; }
+.b2 { width: 180px; height: 180px; background: var(--bg-yellow); top: 65%; left: 80%; animation-delay: 2s; }
+.b3 { width: 90px; height: 90px; background: var(--macaron-blue); top: 80%; left: 15%; animation-delay: 4s; opacity: 0.3; }
+.b4 { width: 150px; height: 150px; background: var(--bg-mint); top: 15%; left: 75%; animation-delay: 1s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.08); }
+}
+
+/* 主容器 */
+.container {
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    z-index: 1;
+}
+
+/* 頂部標題區 */
+.header {
+    margin-bottom: 20px;
+}
+
+.badge {
+    display: inline-block;
+    background-color: var(--white);
+    color: var(--macaron-pink);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 10px;
+}
+
+.main-title {
+    font-size: 2.3rem;
+    color: var(--macaron-pink);
+    text-shadow: 2px 2px 0px var(--white), 4px 4px 0px rgba(255, 133, 161, 0.2);
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+/* 核心卡片區域 */
+.card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 30px 24px;
+    box-shadow: var(--shadow);
+    border: 4px solid #FFF;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+/* 老虎機預覽與按鈕區 */
+.slot-machine {
+    background: #FFF0F3;
+    padding: 20px;
+    border-radius: var(--radius-sm);
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    border: 2px dashed var(--macaron-pink);
+    min-height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 可愛按鈕風格 */
+.btn {
+    border: none;
+    outline: none;
+    padding: 16px 28px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    width: 100%;
+    box-shadow: 0 6px 0px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+    background-color: var(--macaron-pink);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: #ff6b8b;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0px rgba(0,0,0,0.1);
+}
+
+.btn-primary:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0px rgba(0,0,0,0.1);
+}
+
+.btn-map {
+    background-color: var(--macaron-green);
+    color: var(--white);
+}
+
+.btn-map:hover {
+    background-color: #05b88a;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--macaron-yellow);
+    color: var(--text-dark);
+    margin-top: 10px;
+}
+
+.btn-secondary:hover {
+    background-color: #f7c528;
+}
+
+/* 結果卡片內部細節 */
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 18px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.category-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--macaron-pink);
+    font-weight: bold;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.result-name {
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.result-desc {
+    color: #7d8597;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.action-buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 名單管理摺疊選單 */
+.management-card {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    text-align: left;
+    backdrop-filter: blur(5px);
+}
+
+summary {
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--text-color);
+    outline: none;
+    padding: 4px 0;
+}
+
+.management-content {
+    margin-top: 15px;
+}
+
+.add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.add-form input {
+    padding: 10px 14px;
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.add-form input:focus {
+    border-color: var(--macaron-pink);
+}
+
+.btn-small {
+    background-color: var(--macaron-blue);
+    color: var(--white);
+    padding: 10px;
+    font-size: 0.95rem;
+    box-shadow: none;
+}
+
+.restaurant-list {
+    list-style: none;
+    max-height: 180px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.restaurant-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff4d6d;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: #8d99ae;
+    font-size: 0.8rem;
+    text-decoration: underline;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+}
+
+footer {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #a0aab2;
+}
+
+/* 顯示/隱藏 控制 */
+.hidden {
+    display: none !important;
+}
+
+/* 動畫效果 */
+.bounce-in {
+    animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.slot-rolling {
+    animation: slotRoll 0.1s infinite linear;
+}
+
+@keyframes slotRoll {
+    0% { transform: translateY(-5px); }
+    50% { transform: translateY(5px); }
+    100% { transform: translateY(-5px); }
+}
 
 </body>
 </html>
+// 確保所有 HTML DOM 元素載入完畢後才執行邏輯，防止 null 錯誤
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. 預設餐廳資料庫（包含指定的 5 家餐廳與真實美食照片）
+    const defaultRestaurants = [
+        {
+            name: "老潘牛肉麵",
+            img: "https://i.postimg.cc/brG8ZKSH/xia-zai.jpg"
+        },
+        {
+            name: "栗の鍋 Kuri’s Hot Pot",
+            img: "https://i.postimg.cc/FzfmY2kV/unnamed-(1).jpg"
+          
+        },
+        {
+            name: "豪哥水餃",
+            img: "https://i.postimg.cc/WzDjdQq7/unnamed-(3).jpg"
+          
+        },
+        {
+            name: "Soul ER 心靈急診室/精品咖啡館",
+            img: "https://i.postimg.cc/FzfmY2kV/unnamed-(1).jpg"
+          
+        },
+        {
+            name: "舊市羊肉",
+            img: "https://i.postimg.cc/d37vhzZ4/unnamed.jpg"
+          
+        }
+    ];
+
+    // 從 localStorage 讀取餐廳名單，若沒有則使用預設名單
+    let restaurants = JSON.parse(localStorage.getItem('myRestaurants')) || defaultRestaurants;
+
+    // 2. 取得 DOM HTML 元素
+    const mainTitle = document.getElementById('main-title');
+    const drawSection = document.getElementById('draw-section');
+    const resultCard = document.getElementById('result-card');
+    const slotText = document.getElementById('slot-text');
+    const drawBtn = document.getElementById('draw-btn');
+    const retryBtn = document.getElementById('retry-btn');
+    const resultImg = document.getElementById('result-img');
+    const resultName = document.getElementById('result-name');
+    const mapBtn = document.getElementById('map-btn');
+    const restaurantListUI = document.getElementById('restaurant-list');
+    const restaurantCountUI = document.getElementById('restaurant-count');
+    const addForm = document.getElementById('add-form');
+    const inputName = document.getElementById('input-name');
+    const inputImg = document.getElementById('input-img');
+    const resetBtn = document.getElementById('reset-btn');
+
+    let isDrawing = false;
+
+    // 3. 渲染餐廳管理列表
+    function renderRestaurantList() {
+        restaurantListUI.innerHTML = '';
+        restaurantCountUI.textContent = restaurants.length;
+
+        restaurants.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${item.name}</span>
+                <button class="delete-btn" data-index="${index}" title="刪除">✕</button>
+            `;
+            restaurantListUI.appendChild(li);
+        });
+
+        // 儲存至本地記憶體
+        localStorage.setItem('myRestaurants', JSON.stringify(restaurants));
+    }
+
+    // 4. 抽籤主要邏輯
+    function startDraw() {
+        if (isDrawing) return;
+        if (restaurants.length === 0) {
+            alert("請至少新增一家餐廳再進行抽籤喔！");
+            return;
+        }
+
+        isDrawing = true;
+        drawBtn.disabled = true;
+
+        // 切換介面顯示
+        resultCard.classList.add('hidden');
+        drawSection.classList.remove('hidden');
+        slotText.classList.add('slot-rolling');
+
+        // 老虎機快速滾動文字效果
+        let counter = 0;
+        const interval = setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * restaurants.length);
+            slotText.textContent = restaurants[randomIndex].name;
+            counter++;
+
+            if (counter > 20) { // 滾動約 2 秒
+                clearInterval(interval);
+                slotText.classList.remove('slot-rolling');
+                
+                // 決定最終抽中餐廳
+                const finalChoice = restaurants[Math.floor(Math.random() * restaurants.length)];
+                showResult(finalChoice);
+                isDrawing = false;
+                drawBtn.disabled = false;
+            }
+        }, 100);
+    }
+
+    // 5. 顯示抽籤結果與彈跳動畫
+    function showResult(choice) {
+        // 隱藏抽籤區，顯示結果卡片
+        drawSection.classList.add('hidden');
+        resultCard.classList.remove('hidden');
+
+        // 替換大標題並觸發生動的 Bounce 動畫
+        mainTitle.textContent = `🎉 今天就吃：${choice.name}！`;
+        mainTitle.classList.remove('bounce-in');
+        // 強制重繪以重設動畫
+        void mainTitle.offsetWidth; 
+        mainTitle.classList.add('bounce-in');
+
+        // 填入餐廳內容與圖片
+        resultName.textContent = choice.name;
+        resultImg.src = choice.img || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80";
+        resultImg.alt = choice.name;
+
+        // 導向 Google Maps 的動態連結
+        const encodedName = encodeURIComponent(choice.name);
+        mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodedName}`;
+
+        // 發射馬卡龍繽紛彩花效果 (Confetti)
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#FF85A1', '#FFD23F', '#70D6FF', '#06D6A0']
+            });
+        }
+    }
+
+    // 6. 事件監聽 (Event Listeners)
+
+    // 點擊抽籤 / 重新抽籤
+    drawBtn.addEventListener('click', startDraw);
+    retryBtn.addEventListener('click', startDraw);
+
+    // 新增餐廳
+    addForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = inputName.value.trim();
+        const img = inputImg.value.trim();
+
+        if (name) {
+            restaurants.push({
+                name: name,
+                img: img || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80"
+            });
+            inputName.value = '';
+            inputImg.value = '';
+            renderRestaurantList();
+            alert(`已成功新增：「${name}」！`);
+        }
+    });
+
+    // 刪除餐廳
+    restaurantListUI.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+            const index = e.target.getAttribute('data-index');
+            restaurants.splice(index, 1);
+            renderRestaurantList();
+        }
+    });
+
+    // 重置餐廳為預設名單
+    resetBtn.addEventListener('click', () => {
+        if (confirm("確定要恢復成最初的 5 家預設餐廳嗎？")) {
+            restaurants = [...defaultRestaurants];
+            renderRestaurantList();
+        }
+    });
+
+    // 初始化頁面渲染
+    renderRestaurantList();
+});
+
