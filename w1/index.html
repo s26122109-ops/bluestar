@@ -1,91 +1,215 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>今天吃什麼？ - 隨機美食抽籤機</title>
-    <!-- 引入外部 CSS 檔案 -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts 圓潤字體 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
-    <!-- Canvas Confetti 慶祝彩花套件 -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- 引入外部 JS 檔案 (使用 defer 確保 HTML 載入完成) -->
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>個人名片</title>
+  <!-- 連結外部 CSS 檔案 -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="macaron-bg-bubbles">
-        <div class="bubble b1"></div>
-        <div class="bubble b2"></div>
-        <div class="bubble b3"></div>
-        <div class="bubble b4"></div>
+  <!-- 名片主卡片容器 -->
+  <div class="profile-card">
+    
+    <!-- 圓形大頭貼 (可替換 src 裡面的圖片網址) -->
+    <img class="avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="大頭貼">
+    
+    <!-- 姓名 -->
+    <h1 class="name">九尾柴 </h1>
+    
+    <!-- 簡短自我介紹 -->
+    <p class="bio">探索視覺與創意的設計新手，熱愛生活與馬卡龍甜點。</p>
+    
+    <!-- 按鈕區塊 -->
+    <div class="button-group">
+      <a href="https://instagram.com" target="_blank" class="btn btn-instagram">Instagram</a>
+      <a href="mailto:example@email.com" class="btn btn-email">Email</a>
     </div>
 
-    <div class="container">
-        <!-- 標題與結果顯示區域 -->
-        <header class="header">
-            <div class="badge">✨ 告別選擇困難症 ✨</div>
-            <h1 id="main-title" class="main-title bounce-in">今天吃什麼？</h1>
-        </header>
-
-        <!-- 主要互動卡片 -->
-        <main class="card">
-            <!-- 未抽籤或抽籤中的顯示 -->
-            <div id="draw-section" class="draw-section">
-                <div class="slot-machine">
-                    <span id="slot-text">🍱 ✨ 🍔 🍕 🍜 🍣</span>
-                </div>
-                <button id="draw-btn" class="btn btn-primary pulse">
-                    <span class="btn-icon">🎲</span> 點我抽籤！
-                </button>
-            </div>
-
-            <!-- 抽籤結果與詳細卡片（預設隱藏） -->
-            <div id="result-card" class="result-card hidden">
-                <div class="img-wrapper">
-                    <img id="result-img" src="" alt="餐廳美食照片">
-                    <span class="category-tag">美味首選</span>
-                </div>
-                
-                <h2 id="result-name" class="result-name">餐廳名稱</h2>
-                <p id="result-desc" class="result-desc">這家評價超棒，準備好大飽口福了嗎？</p>
-
-                <div class="action-buttons">
-                    <a id="map-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-map">
-                        🚀 馬上出發 (Google Maps)
-                    </a>
-                    <button id="retry-btn" class="btn btn-secondary">
-                        🔄 不喜歡？再抽一次
-                    </button>
-                </div>
-            </div>
-        </main>
-
-        <!-- 管理口袋名單功能區 -->
-        <section class="management-card">
-            <details>
-                <summary>⚙️ 管理我的美食口袋名單 (<span id="restaurant-count">5</span>)</summary>
-                <div class="management-content">
-                    <form id="add-form" class="add-form">
-                        <input type="text" id="input-name" placeholder="餐廳名稱 (例如: 豪哥水餃)" required>
-                        <input type="url" id="input-img" placeholder="照片網址 (選填 https://...)">
-                        <button type="submit" class="btn btn-small">➕ 新增</button>
-                    </form>
-                    <ul id="restaurant-list" class="restaurant-list">
-                        <!-- 動態產生餐廳清單 -->
-                    </ul>
-                    <button id="reset-btn" class="btn-text">恢復預設餐廳名單</button>
-                </div>
-            </details>
-        </section>
-
-        <footer>
-            <p>💖 馬卡龍美食隨機抽籤機 | 祝您用餐愉快！</p>
-        </footer>
-    </div>
+  </div>
 
 </body>
 </html>
+/* 全局重置與背景（淡馬卡龍綠背景） */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  background-color: #E8F5E9; /* 馬卡龍淡粉色背景 */
+  
+  /* 讓卡片在整個螢幕畫面正中央 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* 名片主體 */
+.profile-card {
+  background-color: #FFFFFF; /* 白色卡片背景 */
+  width: 320px;
+  padding: 35px 25px;
+  border-radius: 24px; /* 大圓角現代感 */
+  text-align: center;
+  
+  /* 柔和的微陰影效果 */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  
+  /* 懸浮過渡動畫 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 滑鼠移到名片上的微浮起效果 */
+.profile-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* 圓形大頭貼 */
+.avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%; /* 轉為正圓形 */
+  object-fit: cover;
+  border: 4px solid #FCE4EC; /* 馬卡龍粉紅邊框 */
+  margin-bottom: 16px;
+}
+
+/* 姓名樣式 */
+.name {
+  font-size: 1.4rem;
+  color: #4A4A4A;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+/* 自我介紹樣式 */
+.bio {
+  font-size: 0.95rem;
+  color: #7A7A7A;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+/* 按鈕容器（橫排並列） */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* 按鈕通用樣式 */
+.btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 50px; /* 膠囊狀圓角 */
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+/* 全局重置與背景（馬卡龍淡粉色背景） */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  background-color: #FCE4EC; /* 馬卡龍淡粉色背景 */
+  
+  /* 讓卡片在整個螢幕畫面正中央 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* 名片主體 */
+.profile-card {
+  background-color: #FFFFFF; /* 白色卡片背景 */
+  width: 320px;
+  padding: 35px 25px;
+  border-radius: 24px; /* 大圓角現代感 */
+  text-align: center;
+  
+  /* 柔和粉色微陰影 */
+  box-shadow: 0 10px 25px rgba(233, 30, 99, 0.08);
+  
+  /* 懸浮過渡動畫 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 滑鼠移到名片上的微浮起效果 */
+.profile-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(233, 30, 99, 0.12);
+}
+
+/* 圓形大頭貼 */
+.avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%; /* 轉為正圓形 */
+  object-fit: cover;
+  border: 4px solid #F8BBD0; /* 馬卡龍粉紅邊框 */
+  margin-bottom: 16px;
+}
+
+/* 姓名樣式 */
+.name {
+  font-size: 1.4rem;
+  color: #4A4A4A;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+/* 自我介紹樣式 */
+.bio {
+  font-size: 0.95rem;
+  color: #7A7A7A;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+/* 按鈕容器（橫排並列） */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* 按鈕通用樣式 */
+.btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 50px; /* 膠囊狀圓角 */
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* Instagram 按鈕：乾燥玫瑰粉 */
+.btn-instagram {
+  background-color: #F48FB1;
+  color: #5C0029;
+}
+
+.btn-instagram:hover {
+  background-color: #F06292;
+  color: #FFFFFF;
+}
+
+/* Email 按鈕：粉嫩蜜桃橘 */
+.btn-email {
+  background-color: #FFCCBC;
+  color: #5D4037;
+}
+
+.btn-email:hover {
+  background-color: #FFAB91;
+  color: #FFFFFF;
+}
+
