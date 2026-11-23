@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>櫻花二選一投票器</title>
+  <!-- Tailwind CSS (via CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 自訂櫻花風格 -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap');
+    body {
+      font-family: 'Noto Serif TC', serif;
+      background: #fdf2f8; /* 淡粉紅底 */
+      background-image: radial-gradient(circle at 20% 30%, #ffe4e6 0%, transparent 25%),
+                        radial-gradient(circle at 80% 70%, #fbcfe8 0%, transparent 30%),
+                        radial-gradient(circle at 40% 80%, #fce7f3 0%, transparent 40%);
+      min-height: 100vh;
+    }
+    /* 櫻花花瓣飄落動畫 (純CSS) */
+    .sakura {
+      position: fixed;
+      top: -10%;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 30% 30%, #f9a8d4, #f472b6);
+      border-radius: 80% 0 80% 0;
+      transform: rotate(45deg);
+      opacity: 0.6;
+      pointer-events: none;
+      animation: fall linear infinite;
+      z-index: 0;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0.7; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0.1; }
+    }
+    /* 自訂按鈕樣式 */
+    .btn-sakura {
+      background: linear-gradient(145deg, #fbcfe8, #f9a8d4);
+      border: 1px solid #f472b6;
+      color: #831843;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3);
+      transition: all 0.2s ease;
+    }
+    .btn-sakura:hover {
+      background: linear-gradient(145deg, #f9a8d4, #f472b6);
+      transform: scale(1.02);
+    }
+    .btn-sakura:active { transform: scale(0.98); }
+    .card-sakura {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(8px);
+      border: 1px solid #fbcfe8;
+      box-shadow: 0 8px 32px rgba(249, 168, 212, 0.25);
+      border-radius: 2rem;
+    }
+    .img-container {
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border-radius: 1.5rem;
+      border: 3px solid #fbcfe8;
+      background: #fdf2f8;
+      position: relative;
+    }
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .img-container .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #f472b6;
+      font-size: 0.9rem;
+      flex-direction: column;
+    }
+    .vote-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: #f472b6;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    input[type="datetime-local"] {
+      background: white;
+      border: 1px solid #fbcfe8;
+      border-radius: 9999px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body class="relative overflow-x-hidden">
+  <!-- 櫻花花瓣 -->
+  <div id="sakura-container"></div>
+
+  <!-- 主畫面：建立投票 / 投票 -->
+  <main class="relative z-10 max-w-md mx-auto px-4 py-6 min-h-screen flex flex-col items-center">
+    <!-- 標題 -->
+    <h1 class="text-3xl font-bold text-pink-800 mt-4 mb-2 tracking-wider flex items-center gap-2">
+      <span>🌸</span> 櫻花二選一 <span>🌸</span>
+    </h1>
+    <p class="text-pink-600 text-sm mb-6">拍照 · 投票 · 即時開票</p>
+
+    <!-- ========== 建立投票區塊（預設顯示） ========== -->
+    <section id="createSection" class="w-full card-sakura p-6 mb-6">
+      <h2 class="text-lg font-bold text-pink-800 mb-4 flex items-center gap-2">
+        <span>✿</span> 建立新投票
+      </h2>
+      <!-- 題目 -->
+      <input id="titleInput" type="text" placeholder="輸入投票題目（例如：午餐吃哪間？）" 
+             class="w-full px-4 py-3 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm mb-4 bg-white/80">
+
+      <!-- 兩張圖片上傳 -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <!-- 選項 A -->
+        <div>
+          <label class="block text-pink-700 text-sm font-semibold mb-1">選項 A</label>
+          <div id="previewA" class="img-container cursor-pointer" onclick="document.getElementById('fileA').click()">
+            <div class="placeholder">
+              <span class="text-2xl">📷</span>
+              <span>點擊拍照</span>
+            </div>
+          </div>
+          <input type="file" id="fileA" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(event, 'A')">
+        </div>
+        <!-- 選項 B -->
+        <div>
+          <label class="block text-pink-700 text-sm font-semibold mb-1">選項 B</label>
+          <div id="previewB" class="img-container cursor-pointer" onclick="document.getElementById('fileB').click()">
+            <div class="placeholder">
+              <span class="text-2xl">📷</span>
+              <span>點擊拍照</span>
+            </div>
+          </div>
+          <input type="file" id="fileB" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(event, 'B')">
+        </div>
+      </div>
+
+      <!-- 截止時間 -->
+      <div class="mb-4">
+        <label class="block text-pink-700 text-sm font-semibold mb-1">⏰ 截止時間（可選）</label>
+        <input id="deadlineInput" type="datetime-local" class="w-full">
+      </div>
+
+      <!-- 建立按鈕 -->
+      <button id="createBtn" class="w-full btn-sakura py-3 rounded-full text-base font-bold shadow-md">
+        建立投票 ✨
+      </button>
+      <p id="createMsg" class="text-xs text-center mt-2 text-pink-500"></p>
+    </section>
+
+    <!-- ========== 投票區塊（透過網址參數顯示） ========== -->
+    <section id="voteSection" class="w-full card-sakura p-6 mb-6 hidden">
+      <!-- 題目 -->
+      <h2 id="voteTitle" class="text-xl font-bold text-pink-800 text-center mb-2"></h2>
+      <!-- 倒數計時 -->
+      <div id="countdown" class="text-center text-sm text-pink-600 mb-4 font-mono"></div>
+
+      <!-- 兩張圖片選項 -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="flex flex-col items-center">
+          <div id="voteImgA" class="img-container w-full">
+            <img src="" alt="選項A" class="hidden">
+            <div class="placeholder">選項 A</div>
+          </div>
+          <button id="voteABtn" class="mt-3 w-full btn-sakura py-2 rounded-full text-sm font-bold" onclick="castVote('A')">
+            投給 A
+          </button>
+          <span id="voteCountA" class="text-xs text-pink-600 mt-1">0 票</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="voteImgB" class="img-container w-full">
+            <img src="" alt="選項B" class="hidden">
+            <div class="placeholder">選項 B</div>
+          </div>
+          <button id="voteBBtn" class="mt-3 w-full btn-sakura py-2 rounded-full text-sm font-bold" onclick="castVote('B')">
+            投給 B
+          </button>
+          <span id="voteCountB" class="text-xs text-pink-600 mt-1">0 票</span>
+        </div>
+      </div>
+
+      <!-- 開票結果 -->
+      <div id="resultSection" class="text-center mt-2 p-3 rounded-xl bg-pink-50/80 hidden">
+        <p class="text-pink-800 font-bold text-lg" id="resultText"></p>
+      </div>
+
+      <!-- 隱藏管理員彩蛋（右上角） -->
+      <button id="adminRevealBtn" class="absolute top-4 right-4 text-pink-300 hover:text-pink-500 text-xs bg-white/60 backdrop-blur-sm px-2 py-1 rounded-full border border-pink-200">
+        🌸 開票
+      </button>
+    </section>
+
+    <!-- 分享連結（建立後顯示） -->
+    <div id="shareSection" class="w-full card-sakura p-4 hidden">
+      <p class="text-xs text-pink-700 mb-1">📎 分享連結（複製傳給朋友）：</p>
+      <div class="flex gap-2">
+        <input id="shareUrl" type="text" readonly class="flex-1 px-3 py-2 rounded-full border border-pink-200 text-xs bg-white/80">
+        <button onclick="copyShareUrl()" class="btn-sakura px-4 rounded-full text-xs font-bold">複製</button>
+      </div>
+    </div>
+
+    <!-- 管理員開票按鈕（當投票中時，右上角顯示） -->
+    <div id="adminBar" class="fixed top-2 right-2 z-20">
+      <button id="adminRevealBtnTop" class="hidden bg-white/80 backdrop-blur-sm text-pink-500 text-xs px-3 py-1 rounded-full border border-pink-200 shadow-md hover:bg-pink-50">
+        🌸 管理員開票
+      </button>
+    </div>
+  </main>
+
+  <!-- ==================== JavaScript ==================== -->
+  <script>
+    // ========== 配置 ==========
+    // ⚠️ 請將 GAS_API_URL 替換為你的 Google Apps Script 部署網址
+    // 例如: 'https://script.google.com/macros/s/xxxxxxx/exec'
+    const GAS_API_URL = 'https://script.google.com/macros/s/請填入你的GAS部署ID/exec';
+
+    // 模擬模式（若 GAS_API_URL 未正確設定，使用本地模擬，方便 CodePen 測試）
+    const MOCK_MODE = (GAS_API_URL.includes('請填入') || GAS_API_URL === '');
+    // 本地模擬儲存
+    let mockPolls = JSON.parse(localStorage.getItem('sakuraPolls') || '{}');
+    function saveMockPolls() { localStorage.setItem('sakuraPolls', JSON.stringify(mockPolls)); }
+
+    // 花瓣產生
+    function createSakura() {
+      const container = document.getElementById('sakura-container');
+      for (let i = 0; i < 15; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'sakura';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDuration = (8 + Math.random() * 8) + 's';
+        petal.style.animationDelay = (Math.random() * 10) + 's';
+        petal.style.width = (8 + Math.random() * 10) + 'px';
+        petal.style.height = petal.style.width;
+        petal.style.opacity = 0.3 + Math.random() * 0.4;
+        container.appendChild(petal);
+      }
+    }
+    createSakura();
+
+    // ========== 工具函數 ==========
+    function getPollIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('poll');
+    }
+
+    function generatePollId() {
+      return 'P' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
+    }
+
+    // 壓縮圖片（回傳 base64）
+    function compressImage(file, maxSize = 800) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let { width, height } = img;
+            if (width > height && width > maxSize) {
+              height = Math.round(height * maxSize / width);
+              width = maxSize;
+            } else if (height > maxSize) {
+              width = Math.round(width * maxSize / height);
+              height = maxSize;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+          };
+          img.onerror = reject;
+        };
+        reader.onerror = reject;
+      });
+    }
+
+    // 顯示預覽圖
+    async function handleFileSelect(event, option) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const base64 = await compressImage(file);
+        const previewDiv = document.getElementById('preview' + option);
+        previewDiv.innerHTML = `<img src="${base64}" alt="選項${option}" class="w-full h-full object-cover">`;
+        // 儲存暫存
+        if (option === 'A') window.tempImgA = base64;
+        else window.tempImgB = base64;
+      } catch (e) {
+        alert('圖片處理失敗，請重試');
+      }
+    }
+
+    // 複製分享連結
+    function copyShareUrl() {
+      const input = document.getElementById('shareUrl');
+      input.select();
+      document.execCommand('copy');
+      alert('已複製連結！');
+    }
+
+    // ========== 建立投票 ==========
+    document.getElementById('createBtn').addEventListener('click', async () => {
+      const title = document.getElementById('titleInput').value.trim();
+      const deadline = document.getElementById('deadlineInput').value;
+      const msgEl = document.getElementById('createMsg');
+
+      if (!title) { msgEl.textContent = '請輸入投票題目'; return; }
+      if (!window.tempImgA || !window.tempImgB) { msgEl.textContent = '請上傳兩張圖片'; return; }
+
+      const pollId = generatePollId();
+      const btn = document.getElementById('createBtn');
+      btn.disabled = true;
+      btn.textContent = '建立中...';
+
+      if (MOCK_MODE) {
+        // 模擬模式：儲存在 localStorage
+        const poll = {
+          id: pollId,
+          title,
+          imgA: window.tempImgA,
+          imgB: window.tempImgB,
+          votesA: 0,
+          votesB: 0,
+          status: 'open',
+          deadline: deadline || ''
+        };
+        mockPolls[pollId] = poll;
+        saveMockPolls();
+        showShareLink(pollId);
+        msgEl.textContent = '✅ 投票建立成功（模擬模式）！';
+        btn.disabled = false;
+        btn.textContent = '建立投票 ✨';
+        // 自動跳轉到投票頁
+        setTimeout(() => { window.location.href = `?poll=${pollId}`; }, 800);
+      } else {
+        // 真實 API 呼叫
+        try {
+          const res = await fetch(GAS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+              action: 'create',
+              pollId,
+              title,
+              imgA: window.tempImgA,
+              imgB: window.tempImgB,
+              deadline: deadline || ''
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showShareLink(pollId);
+            msgEl.textContent = '✅ 投票建立成功！';
+            setTimeout(() => { window.location.href = `?poll=${pollId}`; }, 800);
+          } else {
+            msgEl.textContent = '❌ 建立失敗：' + (data.error || '未知錯誤');
+          }
+        } catch (err) {
+          msgEl.textContent = '❌ 網路錯誤，請檢查 GAS 網址';
+        }
+        btn.disabled = false;
+        btn.textContent = '建立投票 ✨';
+      }
+    });
+
+    function showShareLink(pollId) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      document.getElementById('shareUrl').value = `${baseUrl}?poll=${pollId}`;
+      document.getElementById('shareSection').classList.remove('hidden');
+    }
+
+    // ========== 投票頁面邏輯 ==========
+    let currentPoll = null;
+    let countdownInterval = null;
+
+    async function loadPoll(pollId) {
+      document.getElementById('createSection').classList.add('hidden');
+      document.getElementById('voteSection').classList.remove('hidden');
+      document.getElementById('shareSection').classList.add('hidden');
+
+      let poll;
+      if (MOCK_MODE) {
+        poll = mockPolls[pollId];
+        if (!poll) { alert('找不到此投票（模擬）'); return; }
+      } else {
+        try {
+          const res = await fetch(`${GAS_API_URL}?poll=${pollId}`);
+          poll = await res.json();
+          if (poll.error) { alert(poll.error); return; }
+        } catch (err) {
+          alert('載入失敗，請檢查網路'); return;
+        }
+      }
+
+      currentPoll = poll;
+      renderVotePage(poll);
+    }
+
+    function renderVotePage(poll) {
+      document.getElementById('voteTitle').textContent = poll.title;
+      
+      // 設定圖片
+      const imgA = document.querySelector('#voteImgA img');
+      const imgB = document.querySelector('#voteImgB img');
+      const placeholderA = document.querySelector('#voteImgA .placeholder');
+      const placeholderB = document.querySelector('#voteImgB .placeholder');
+      
+      if (poll.imgA) {
+        imgA.src = poll.imgA;
+        imgA.classList.remove('hidden');
+        placeholderA.classList.add('hidden');
+      }
+      if (poll.imgB) {
+        imgB.src = poll.imgB;
+        imgB.classList.remove('hidden');
+        placeholderB.classList.add('hidden');
+      }
+
+      // 更新票數
+      document.getElementById('voteCountA').textContent = (poll.votesA || 0) + ' 票';
+      document.getElementById('voteCountB').textContent = (poll.votesB || 0) + ' 票';
+
+      // 檢查是否已截止或開票
+      const deadline = poll.deadline ? new Date(poll.deadline) : null;
+      const now = new Date();
+      const isExpired = deadline && now >= deadline;
+      const isRevealed = poll.status === 'revealed';
+
+      if (isRevealed || isExpired) {
+        lockVoting(poll, isRevealed ? '已開票' : '已截止');
+        showResult(poll);
+      } else {
+        // 啟動倒數
+        if (deadline) {
+          startCountdown(deadline);
+        } else {
+          document.getElementById('countdown').textContent = '⏳ 無截止時間';
+        }
+        // 顯示管理員按鈕（右上角）
+        document.getElementById('adminRevealBtnTop').classList.remove('hidden');
+        document.getElementById('adminRevealBtnTop').onclick = () => revealPoll(poll.id);
+      }
+
+      // 隱藏彩蛋按鈕（在投票區塊內）
+      document.getElementById('adminRevealBtn').onclick = () => revealPoll(poll.id);
+    }
+
+    function startCountdown(deadline) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      const el = document.getElementById('countdown');
+      function update() {
+        const now = new Date();
+        const diff = deadline - now;
+        if (diff <= 0) {
+          el.textContent = '⏰ 投票已截止';
+          clearInterval(countdownInterval);
+          // 自動鎖定並開票（重新載入或直接處理）
+          if (currentPoll) {
+            currentPoll.status = 'revealed';
+            lockVoting(currentPoll, '已截止');
+            showResult(currentPoll);
+          }
+          return;
+        }
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        el.textContent = `⏳ 倒數 ${days > 0 ? days + '天' : ''}${hours}時${mins}分${secs}秒`;
+      }
+      update();
+      countdownInterval = setInterval(update, 1000);
+    }
+
+    function lockVoting(poll, reason) {
+      document.getElementById('voteABtn').disabled = true;
+      document.getElementById('voteBBtn').disabled = true;
+      document.getElementById('voteABtn').classList.add('opacity-50', 'cursor-not-allowed');
+      document.getElementById('voteBBtn').classList.add('opacity-50', 'cursor-not-allowed');
+      document.getElementById('adminRevealBtnTop').classList.add('hidden');
+      document.getElementById('countdown').textContent = '⏰ ' + (reason || '投票已結束');
+    }
+
+    function showResult(poll) {
+      const resultSection = document.getElementById('resultSection');
+      const resultText = document.getElementById('resultText');
+      const votesA = poll.votesA || 0;
+      const votesB = poll.votesB || 0;
+      let winner = '';
+      if (votesA > votesB) winner = '🏆 選項 A 勝出！';
+      else if (votesB > votesA) winner = '🏆 選項 B 勝出！';
+      else winner = '🤝 平手！';
+      resultText.textContent = `${winner}  (A:${votesA}票 / B:${votesB}票)`;
+      resultSection.classList.remove('hidden');
+    }
+
+    // 投票
+    async function castVote(choice) {
+      if (!currentPoll) return;
+      if (currentPoll.status === 'revealed') { alert('投票已結束'); return; }
+      const deadline = currentPoll.deadline ? new Date(currentPoll.deadline) : null;
+      if (deadline && new Date() >= deadline) { alert('投票已截止'); return; }
+
+      const btn = choice === 'A' ? document.getElementById('voteABtn') : document.getElementById('voteBBtn');
+      btn.disabled = true;
+      btn.textContent = '投票中...';
+
+      if (MOCK_MODE) {
+        // 模擬投票
+        if (choice === 'A') currentPoll.votesA = (currentPoll.votesA || 0) + 1;
+        else currentPoll.votesB = (currentPoll.votesB || 0) + 1;
+        mockPolls[currentPoll.id] = currentPoll;
+        saveMockPolls();
+        document.getElementById('voteCountA').textContent = currentPoll.votesA + ' 票';
+        document.getElementById('voteCountB').textContent = currentPoll.votesB + ' 票';
+        alert('投票成功！');
+        btn.disabled = false;
+        btn.textContent = choice === 'A' ? '投給 A' : '投給 B';
+        // 投票後可鎖定按鈕（防止重複）
+        document.getElementById('voteABtn').disabled = true;
+        document.getElementById('voteBBtn').disabled = true;
+      } else {
+        try {
+          const res = await fetch(GAS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+              action: 'vote',
+              pollId: currentPoll.id,
+              choice: choice
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert('投票成功！');
+            // 重新載入最新票數
+            const fresh = await fetch(`${GAS_API_URL}?poll=${currentPoll.id}`).then(r => r.json());
+            currentPoll = fresh;
+            document.getElementById('voteCountA').textContent = (fresh.votesA || 0) + ' 票';
+            document.getElementById('voteCountB').textContent = (fresh.votesB || 0) + ' 票';
+            // 鎖定按鈕（已投過）
+            document.getElementById('voteABtn').disabled = true;
+            document.getElementById('voteBBtn').disabled = true;
+          } else {
+            alert(data.error || '投票失敗');
+          }
+        } catch (err) {
+          alert('網路錯誤，請重試');
+        }
+        btn.disabled = false;
+        btn.textContent = choice === 'A' ? '投給 A' : '投給 B';
+      }
+    }
+
+    // 管理員開票
+    async function revealPoll(pollId) {
+      if (!confirm('確定要提前開票並結束投票嗎？')) return;
+      
+      if (MOCK_MODE) {
+        const poll = mockPolls[pollId];
+        if (!poll) return;
+        poll.status = 'revealed';
+        mockPolls[pollId] = poll;
+        saveMockPolls();
+        currentPoll = poll;
+        lockVoting(poll, '已開票');
+        showResult(poll);
+        document.getElementById('adminRevealBtnTop').classList.add('hidden');
+        alert('已開票！');
+      } else {
+        try {
+          const res = await fetch(GAS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+              action: 'reveal',
+              pollId: pollId
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            const fresh = await fetch(`${GAS_API_URL}?poll=${pollId}`).then(r => r.json());
+            currentPoll = fresh;
+            lockVoting(fresh, '已開票');
+            showResult(fresh);
+            document.getElementById('adminRevealBtnTop').classList.add('hidden');
+            alert('已開票！');
+          }
+        } catch (err) {
+          alert('開票失敗');
+        }
+      }
+    }
+
+    // ========== 初始化 ==========
+    window.addEventListener('DOMContentLoaded', () => {
+      const pollId = getPollIdFromUrl();
+      if (pollId) {
+        loadPoll(pollId);
+      } else {
+        // 建立模式：不顯示投票區塊
+        document.getElementById('voteSection').classList.add('hidden');
+        document.getElementById('adminBar').classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
